@@ -1,0 +1,35 @@
+package cl.tipum.blinblineo.ms_catalogo.controller;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import cl.tipum.blinblineo.ms_catalogo.model.Producto;
+import cl.tipum.blinblineo.ms_catalogo.service.ProductoService;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/v1/productos")
+@RequiredArgsConstructor
+public class ProductoController {
+
+    private final ProductoService productoService;
+
+    // 1. Endpoint para ver toda la vitrina
+    // GET http://localhost:8081/api/v1/productos
+    @GetMapping
+    public ResponseEntity<List<Producto>> obtenerTodos() {
+        return ResponseEntity.ok(productoService.obtenerTodos());
+    }
+
+    // 2. Endpoint para buscar una prenda exacta por su SKU
+    // GET http://localhost:8081/api/v1/productos/{sku}
+    @GetMapping("/{sku}")
+    public ResponseEntity<Producto> obtenerPorSku(@PathVariable String sku) {
+        return ResponseEntity.ok(productoService.obtenerPorSku(sku));
+    }
+}
