@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "MsCatalogoApplication",
+            "request": "launch",
+            "mainClass": "cl.tipum.blinblineo.ms_catalogo.MsCatalogoApplication",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "MsVentasApplication",
+            "request": "launch",
+            "mainClass": "cl.tipum.blinblineo.ms_ventas.MsVentasApplication",
+            "projectName": "ms-ventas"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsCatalogoApplication<ms_catalogo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.tipum.blinblineo.ms_catalogo.MsCatalogoApplication",
+            "projectName": "ms_catalogo",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
