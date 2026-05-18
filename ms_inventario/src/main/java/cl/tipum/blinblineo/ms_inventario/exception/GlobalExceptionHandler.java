@@ -1,8 +1,5 @@
-package cl.tipum.blinblineo.ms_catalogo.exception;
+package cl.tipum.blinblineo.ms_inventario.exception;
  
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,13 +9,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
  
-import cl.tipum.blinblineo.ms_catalogo.dto.ErrorDTO;
+import cl.tipum.blinblineo.ms_inventario.dto.ErrorDTO;
+ 
+import java.util.HashMap;
+import java.util.Map;
  
 /**
  * CORRECCIONES APLICADAS:
- * - Manejo de excepciones de validación Bean Validation
+ * - Manejo de IllegalStateException para stock insuficiente (409 Conflict)
+ * - Manejo de excepciones de validación Bean Validation (400 Bad Request)
  * - Logs de errores para trazabilidad
- * - Cobertura más completa de excepciones
+ * - Cobertura completa de excepciones (IE 2.3.1)
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,19 +31,30 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.warn("Recurso no encontrado o duplicado: {}", ex.getMessage());
-        
-        // Diferencia entre 404 (no encontrado) y 409 (duplicado)
-        HttpStatus status = ex.getMessage().contains("ya existe") 
-                ? HttpStatus.CONFLICT 
-                : HttpStatus.NOT_FOUND;
+        log.warn("Recurso no encontrado: {}", ex.getMessage());
         
         ErrorDTO error = ErrorDTO.builder()
                 .mensaje(ex.getMessage())
-                .status(status.value())
+                .status(HttpStatus.NOT_FOUND.value())
                 .build();
                 
-        return ResponseEntity.status(status).body(error);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+ 
+    /**
+     * Maneja errores de estado ilegal (stock insuficiente, etc.) - 409 Conflict
+     * CORRECCIÓN: Ahora captura IllegalStateException que lanza reducirStock
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorDTO> handleIllegalStateException(IllegalStateException ex) {
+        log.error("Error de estado: {}", ex.getMessage());
+        
+        ErrorDTO error = ErrorDTO.builder()
+                .mensaje(ex.getMessage())
+                .status(HttpStatus.CONFLICT.value())
+                .build();
+                
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
  
     /**
