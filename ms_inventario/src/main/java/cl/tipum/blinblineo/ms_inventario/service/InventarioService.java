@@ -28,11 +28,22 @@ public class InventarioService {
         return inventario;
     }
 
-    // 3. Restar stock cuando hay una venta
+    // 3. Inicializar stock de una prenda nueva
+    public Inventario inicializarStock(Inventario inventario) {
+        // Validación de seguridad para no duplicar filas del mismo producto
+        Inventario existente = inventarioRepository.findBySku(inventario.getSku());
+        if (existente != null) {
+            throw new IllegalArgumentException("El SKU " + inventario.getSku() + " ya existe en bodega.");
+        }
+        return inventarioRepository.save(inventario);
+    }
+
+    // 4. Restar stock cuando hay una venta
     public Inventario reducirStock(String sku, Integer cantidadComprada) {
+        // Reutiliza tu propia validación
         Inventario inventario = obtenerPorSku(sku);
         
-        // Verificamos que haya suficiente ropa en bodega
+        // Verifica que haya suficiente ropa en bodega
         if (inventario.getCantidad() < cantidadComprada) {
             throw new IllegalStateException("Stock insuficiente. Solo quedan " + inventario.getCantidad() + " unidades del SKU: " + sku);
         }
