@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Venta {
+
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

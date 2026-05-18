@@ -16,8 +16,8 @@ public class VentaDTOMapper {
         }
 
         VentaResponseDTO dto = new VentaResponseDTO();
-        dto.setFolioBoleta(venta.getFolioBoleta());
-        dto.setIdCliente(venta.getIdCliente());
+        dto.setFolioBoleta(venta.getFolioBoleta()); 
+        dto.setIdCliente(venta.getIdCliente()); 
         dto.setMontoTotal(venta.getMontoTotal());
         dto.setFechaVenta(venta.getFechaVenta());
         dto.setEstado(venta.getEstado());
