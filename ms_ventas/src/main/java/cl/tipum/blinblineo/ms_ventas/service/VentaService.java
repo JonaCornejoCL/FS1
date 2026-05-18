@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cl.tipum.blinblineo.ms_ventas.client.CatalogoClient;
+import cl.tipum.blinblineo.ms_ventas.client.InventarioClient;
 import cl.tipum.blinblineo.ms_ventas.dto.VentaDTOMapper;
 import cl.tipum.blinblineo.ms_ventas.dto.VentaRequestDTO;
 import cl.tipum.blinblineo.ms_ventas.dto.VentaResponseDTO;
@@ -24,6 +26,10 @@ public class VentaService {
     // inyección de dependencias
     private final VentaRepository ventaRepository;
     private final VentaDTOMapper ventaDTOMapper; // traductor
+    
+    // --- CLIENTES FEIGN ---
+    private final CatalogoClient catalogoClient;
+    private final InventarioClient inventarioClient;
 
     public List<VentaResponseDTO> obtenerTodasLasVentas() {
         List<Venta> ventas = ventaRepository.findAll();
@@ -42,6 +48,17 @@ public class VentaService {
         if (ventaRepository.existsByFolioBoleta(request.getFolioBoleta())) {
             throw new RecursoYaExisteException("Ya existe una venta con el folio: " + request.getFolioBoleta());
         }
+
+        // --- MAGIA DE MICROSERVICIOS CON FEIGN ---
+        // antes de guardar la venta, valida con los otros microservicios
+        request.getDetalles().forEach(detalle -> {
+            // 1. valida que el SKU exista en el Catálogo (si no existe, Feign lanza error)
+            catalogoClient.obtenerProductoPorSku(detalle.getSkuProducto());
+            
+            // 2. descuenta el stock en el Inventario (si no hay stock, Feign lanza error)
+            inventarioClient.reducirStock(detalle.getSkuProducto(), detalle.getCantidad());
+        });
+        // -----------------------------------------
 
         Venta nuevaVenta = Venta.builder()
                 .idCliente(request.getIdCliente())

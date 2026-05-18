@@ -7,9 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableFeignClients
 public class MsVentasApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(MsVentasApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(MsVentasApplication.class, args);
+    }
 }

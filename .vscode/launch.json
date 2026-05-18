@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MsVentasApplication",
+            "request": "launch",
+            "mainClass": "cl.tipum.blinblineo.ms_ventas.MsVentasApplication",
+            "projectName": "ms_ventas"
+        },
+        {
+            "type": "java",
             "name": "MsCatalogoApplication",
             "request": "launch",
             "mainClass": "cl.tipum.blinblineo.ms_catalogo.MsCatalogoApplication",
@@ -31,6 +38,17 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "cl.tipum.blinblineo.ms_catalogo.MsCatalogoApplication",
             "projectName": "ms_catalogo",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62733 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ms_catalogo"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsInventarioApplication<ms_inventario>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.tipum.blinblineo.ms_inventario.MsInventarioApplication",
+            "projectName": "ms_inventario",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }
