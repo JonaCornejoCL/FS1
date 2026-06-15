@@ -51,6 +51,26 @@
             "projectName": "ms_inventario",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsEurekaServerApplication<ms_eureka_server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.tipum.blinblineo.ms_eureka_server.MsEurekaServerApplication",
+            "projectName": "ms_eureka_server",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsGatewayApplication<ms_gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.tipum.blinblineo.ms_gateway.MsGatewayApplication",
+            "projectName": "ms_gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
