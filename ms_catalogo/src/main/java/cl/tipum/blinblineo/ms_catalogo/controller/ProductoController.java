@@ -83,7 +83,7 @@ public class ProductoController {
                 .build());
         
         Producto productoActualizado = productoService.actualizar(sku, producto);
-        return ResponseEntity.ok(dtoMapper.toDTO(productoActualizado));
+        return ResponseEntity.status(HttpStatus.CREATED).body(dtoMapper.toDTO(productoActualizado));
     }
  
     // 5. Endpoint para eliminar una prenda de la vitrina
