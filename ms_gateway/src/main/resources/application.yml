@@ -12,18 +12,18 @@ spring:
             locator:
               enabled: true
           routes:
-            - id: ventas_route
-              uri: lb://MS-VENTAS
+            - id: ms_ventas
+              uri: http://localhost:8080
               predicates:
                 - Path=/api/v1/ventas/**
                 
-            - id: catalogo_route
-              uri: lb://MS-CATALOGO
+            - id: ms_catalogo
+              uri: http://localhost:8081
               predicates:
                 - Path=/api/v1/productos/**
                 
-            - id: inventario_route
-              uri: lb://MS-INVENTARIO
+            - id: ms_inventario
+              uri: http://localhost:8082
               predicates:
                 - Path=/api/v1/inventario/**
 

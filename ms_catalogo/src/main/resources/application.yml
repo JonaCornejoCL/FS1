@@ -1,7 +1,10 @@
 spring:
   application:
-    name: MS-CATALOGO
+    name: ms_catalogo
+  devtools:
+    restart:
+      enabled: false
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://localhost:8761/eureka

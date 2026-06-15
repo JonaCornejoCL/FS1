@@ -14,7 +14,7 @@ public class ProductoDTO {
     private String sku;
     private String nombre;
     private String descripcion;
-    private Integer precio;
+    private Double precio;
     private String estado;
 
 }

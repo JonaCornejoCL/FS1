@@ -1,7 +1,7 @@
 spring:
   application:
-    name: MS-VENTAS
+    name: ms_ventas
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://localhost:8761/eureka

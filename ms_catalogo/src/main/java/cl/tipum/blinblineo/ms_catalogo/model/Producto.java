@@ -33,7 +33,7 @@ public class Producto {
     private String descripcion;
 
     @Column(nullable = false)
-    private Integer precio;
+    private Double precio;
 
     @Column(nullable = false, length = 20)
     private String estado;
