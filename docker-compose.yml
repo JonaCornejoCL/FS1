@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  ms-eureka-server:
+    build: ./ms_eureka_server
+    container_name: ms-eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - blinblineo-network
+
+  ms-gateway:
+    build: ./ms_gateway
+    container_name: ms-gateway
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_APPLICATION_NAME=ms-gateway
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ms-eureka-server:8761/eureka/
+    depends_on:
+      - ms-eureka-server
+    networks:
+      - blinblineo-network
+
+  ms-catalogo:
+    build: ./ms_catalogo
+    container_name: ms-catalogo
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_APPLICATION_NAME=ms-catalogo
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ms-eureka-server:8761/eureka/
+      - DB_URL=jdbc:postgresql://aws-1-us-west-1.pooler.supabase.com:5432/postgres?sslmode=require
+      - DB_USER=postgres.pjryhukplrppfspdiftt
+      - DB_PASSWORD=TiendaBlinblineo12345*
+    depends_on:
+      - ms-eureka-server
+    networks:
+      - blinblineo-network
+
+  ms-inventario:
+    build: ./ms_inventario
+    container_name: ms-inventario
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_APPLICATION_NAME=ms-inventario
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ms-eureka-server:8761/eureka/
+      - DB_URL=jdbc:postgresql://aws-1-us-west-1.pooler.supabase.com:5432/postgres?sslmode=require
+      - DB_USER=postgres.pjryhukplrppfspdiftt
+      - DB_PASSWORD=TiendaBlinblineo12345*
+    depends_on:
+      - ms-eureka-server
+    networks:
+      - blinblineo-network
+
+  ms-ventas:
+    build: ./ms_ventas
+    container_name: ms-ventas
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_APPLICATION_NAME=ms-ventas
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ms-eureka-server:8761/eureka/
+      - DB_URL=jdbc:postgresql://aws-1-us-west-1.pooler.supabase.com:5432/postgres?sslmode=require
+      - DB_USER=postgres.pjryhukplrppfspdiftt
+      - DB_PASSWORD=TiendaBlinblineo12345*
+    depends_on:
+      - ms-eureka-server
+      - ms-catalogo
+      - ms-inventario
+    networks:
+      - blinblineo-network
+
+networks:
+  blinblineo-network:
+    driver: bridge

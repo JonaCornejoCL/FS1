@@ -1,31 +1,29 @@
 server:
-  port: 8090 #-- (ahí le explico profe) --#
+  port: 8090
 
 spring:
   application:
     name: ms-gateway
   cloud:
     gateway:
-      server:
-        webflux:
-          discovery:
-            locator:
-              enabled: true
-          routes:
-            - id: ms_ventas
-              uri: http://localhost:8080
-              predicates:
-                - Path=/api/v1/ventas/**
-                
-            - id: ms_catalogo
-              uri: http://localhost:8081
-              predicates:
-                - Path=/api/v1/productos/**
-                
-            - id: ms_inventario
-              uri: http://localhost:8082
-              predicates:
-                - Path=/api/v1/inventario/**
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: ms-ventas
+          uri: lb://MS-VENTAS
+          predicates:
+            - Path=/api/v1/ventas/**
+            
+        - id: ms-catalogo
+          uri: lb://MS-CATALOGO
+          predicates:
+            - Path=/api/v1/productos/**
+            
+        - id: ms-inventario
+          uri: lb://MS-INVENTARIO
+          predicates:
+            - Path=/api/v1/inventario/**
 
 eureka:
   client:
