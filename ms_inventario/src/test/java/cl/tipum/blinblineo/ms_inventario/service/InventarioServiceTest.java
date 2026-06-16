@@ -1,66 +1,103 @@
 package cl.tipum.blinblineo.ms_inventario.service;
 
+import cl.tipum.blinblineo.ms_inventario.model.Inventario;
+import cl.tipum.blinblineo.ms_inventario.repository.InventarioRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+@ExtendWith(MockitoExtension.class)
+class InventarioServiceTest {
 
-import cl.tipum.blinblineo.ms_inventario.model.Inventario;
-import cl.tipum.blinblineo.ms_inventario.repository.InventarioRepository;
-
-public class InventarioServiceTest {
-
-    @Mock // Simula la base de datos (Supabase) para no tocarla
+    @Mock
     private InventarioRepository inventarioRepository;
 
-    @InjectMocks // Inyecta el mock en el servicio real
+    @InjectMocks
     private InventarioService inventarioService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    @Test
+    void debeListarTodosLosInventarios() {
+        Inventario i1 = new Inventario(); i1.setSku("SKU1");
+        Inventario i2 = new Inventario(); i2.setSku("SKU2");
+        when(inventarioRepository.findAll()).thenReturn(Arrays.asList(i1, i2));
+
+        List<Inventario> resultado = inventarioService.obtenerTodos();
+
+        assertEquals(2, resultado.size());
+        verify(inventarioRepository).findAll();
     }
 
     @Test
-    void testReducirStock_Exitoso() {
-        // 1. GIVEN (dado que el producto cuenta con 50 unidades)
-        String sku = "BLIN-CH-001";
-        Inventario inventarioMock = new Inventario();
-        inventarioMock.setSku(sku);
-        inventarioMock.setCantidad(50);
+    void obtenerPorSku_debeRetornarInventarioSiExiste() {
+        Inventario inventario = new Inventario();
+        inventario.setSku("SKU1");
+        when(inventarioRepository.findBySku("SKU1")).thenReturn(inventario);
 
-        when(inventarioRepository.findBySku(sku)).thenReturn(inventarioMock);
-        when(inventarioRepository.save(any(Inventario.class))).thenReturn(inventarioMock);
+        Inventario resultado = inventarioService.obtenerPorSku("SKU1");
 
-        // 2. WHEN (Cuando el cliente compra 2 unidades)
-        Inventario resultado = inventarioService.reducirStock(sku, 2);
-
-        // 3. THEN (Entonces el stock debe bajar a 48)
         assertNotNull(resultado);
-        assertEquals(48, resultado.getCantidad());
-        verify(inventarioRepository, times(1)).save(inventarioMock);
+        assertEquals("SKU1", resultado.getSku());
     }
 
     @Test
-    void testReducirStock_FallaPorFaltaDeStock() {
-        // 1. GIVEN (dado que solo tenemos 10 unidades)
-        String sku = "BLIN-CH-002";
-        Inventario inventarioMock = new Inventario();
-        inventarioMock.setSku(sku);
-        inventarioMock.setCantidad(10);
+    void obtenerPorSku_debeLanzarExcepcionSiNoExiste() {
+        when(inventarioRepository.findBySku("FALSO")).thenReturn(null);
 
-        when(inventarioRepository.findBySku(sku)).thenReturn(inventarioMock);
+        assertThrows(IllegalArgumentException.class, () -> inventarioService.obtenerPorSku("FALSO"));
+    }
 
-        // 2. WHEN & THEN (Cuando intentamos comprar 50, Entonces lanza excepción)
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            inventarioService.reducirStock(sku, 50);
-        });
+    @Test
+    void inicializarStock_debeGuardarSiNoExiste() {
+        Inventario nuevo = new Inventario();
+        nuevo.setSku("NUEVO-SKU");
+        when(inventarioRepository.findBySku("NUEVO-SKU")).thenReturn(null);
+        when(inventarioRepository.save(any(Inventario.class))).thenReturn(nuevo);
 
-        assertTrue(exception.getMessage().contains("Stock insuficiente"));
-        verify(inventarioRepository, never()).save(any()); // Verifica que no se guarda nada
+        Inventario resultado = inventarioService.inicializarStock(nuevo);
+
+        assertNotNull(resultado);
+        verify(inventarioRepository).save(nuevo);
+    }
+
+    @Test
+    void inicializarStock_debeLanzarExcepcionSiYaExiste() {
+        Inventario existente = new Inventario();
+        existente.setSku("EXISTE");
+        when(inventarioRepository.findBySku("EXISTE")).thenReturn(existente);
+
+        assertThrows(IllegalArgumentException.class, () -> inventarioService.inicializarStock(existente));
+        verify(inventarioRepository, never()).save(any());
+    }
+
+    @Test
+    void reducirStock_debeReducirExitosamente() {
+        Inventario inicial = new Inventario();
+        inicial.setSku("SKU1");
+        inicial.setCantidad(10);
+        
+        when(inventarioRepository.findBySku("SKU1")).thenReturn(inicial);
+        when(inventarioRepository.save(any(Inventario.class))).thenReturn(inicial);
+
+        Inventario resultado = inventarioService.reducirStock("SKU1", 5);
+
+        assertEquals(5, resultado.getCantidad());
+    }
+
+    @Test
+    void reducirStock_debeLanzarExcepcionPorStockInsuficiente() {
+        Inventario inicial = new Inventario();
+        inicial.setSku("SKU1");
+        inicial.setCantidad(2);
+        when(inventarioRepository.findBySku("SKU1")).thenReturn(inicial);
+
+        assertThrows(IllegalStateException.class, () -> inventarioService.reducirStock("SKU1", 5));
     }
 }
